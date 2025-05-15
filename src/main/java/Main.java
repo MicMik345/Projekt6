@@ -14,6 +14,7 @@ Poniższe zadania będą się sprowadzały do modyfikacji bazowego kodu. Proces 
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 class WrongStudentName extends Exception { }
 class WrongAge extends Exception { }
@@ -30,8 +31,13 @@ public class Main {
                     case 1: exercise1(); break;
                     case 2: exercise2(); break;
                     case 3: exercise3(); break;
-                    default: return;
+                    case 0: return;
+                    default:
+                        System.out.println("Błędny wybór! Dozwolone opcje to 0–3.");
                 }
+            } catch (InputMismatchException e) {
+                System.out.println("Błędny format danych! Wpisz cyfrę (0–3).");
+                scan.nextLine();
             } catch(IOException e) {
                 System.out.println("Błąd wejścia/wyjścia: " + e.getMessage());
             } catch(WrongStudentName e) {
@@ -39,23 +45,27 @@ public class Main {
             } catch(WrongAge e) {
                 System.out.println("Błędny wiek studenta! Musi być z przedziału 1-99.");
             } catch(WrongDateOfBirth e) {
-                System.out.println("Błędny format daty! Wymagany format: DD-MM-YYYY");
+                System.out.println("Błędna data urodzenia! Wymagany format: DD-MM-YYYY.");
+            } catch(Exception e) {
+                System.out.println("Inny nieoczekiwany błąd: " + e.getMessage());
+                scan.nextLine();
             }
         }
     }
 
     public static int menu() {
-        System.out.println("Wciśnij:");
+        System.out.println("\nWciśnij:");
         System.out.println("1 - aby dodać studenta");
         System.out.println("2 - aby wypisać wszystkich studentów");
         System.out.println("3 - aby wyszukać studenta po imieniu");
         System.out.println("0 - aby wyjść z programu");
+        System.out.print("Twój wybór: ");
         return scan.nextInt();
     }
 
     public static String ReadName() throws WrongStudentName {
         scan.nextLine();
-        System.out.println("Podaj imię: ");
+        System.out.print("Podaj imię: ");
         String name = scan.nextLine();
         if(name.contains(" "))
             throw new WrongStudentName();
@@ -63,7 +73,7 @@ public class Main {
     }
 
     public static int ReadAge() throws WrongAge {
-        System.out.println("Podaj wiek: ");
+        System.out.print("Podaj wiek: ");
         int age = scan.nextInt();
         if(age < 1 || age > 99)
             throw new WrongAge();
@@ -71,23 +81,19 @@ public class Main {
     }
 
     public static String ReadDate() throws WrongDateOfBirth {
-        System.out.println("Podaj datę urodzenia DD-MM-YYYY");
+        System.out.print("Podaj datę urodzenia DD-MM-YYYY: ");
         String date = scan.nextLine();
-        String[] parts = date.split("-");
-        if (parts.length != 3 || 
-            parts[0].length() != 2 || 
-            parts[1].length() != 2 || 
-            parts[2].length() != 4) {
+        if (!date.matches("\\d{2}-\\d{2}-\\d{4}")) {
             throw new WrongDateOfBirth();
         }
         return date;
     }
 
     public static void exercise1() throws IOException, WrongStudentName, WrongAge, WrongDateOfBirth {
-        var name = ReadName();
-        var age = ReadAge();
+        String name = ReadName();
+        int age = ReadAge();
         scan.nextLine();
-        var date = ReadDate();
+        String date = ReadDate();
         (new Service()).addStudent(new Student(name, age, date));
     }
 
@@ -100,8 +106,8 @@ public class Main {
 
     public static void exercise3() throws IOException {
         scan.nextLine();
-        System.out.println("Podaj imię: ");
-        var name = scan.nextLine();
+        System.out.print("Podaj imię: ");
+        String name = scan.nextLine();
         var wanted = (new Service()).findStudentByName(name);
         if(wanted == null)
             System.out.println("Nie znaleziono...");
