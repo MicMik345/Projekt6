@@ -33,7 +33,7 @@ class Main {
             } catch(IOException e) {
 
             } catch(WrongStudentName e) {
-                System.out.println("Błędne imię studenta!");
+                System.out.println("Błędne imię studenta!!");
             }
         }
     }
