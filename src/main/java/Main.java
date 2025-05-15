@@ -16,8 +16,9 @@ import java.io.IOException;
 import java.util.Scanner;
 
 class WrongStudentName extends Exception { }
+class WrongAge extends Exception { }
 
-class Main {
+public class Main {
     public static Scanner scan = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -31,9 +32,11 @@ class Main {
                     default: return;
                 }
             } catch(IOException e) {
-
+                System.out.println("Błąd wejścia/wyjścia: " + e.getMessage());
             } catch(WrongStudentName e) {
-                System.out.println("Błędne imię studenta!!");
+                System.out.println("Błędne imię studenta! Nie może zawierać spacji.");
+            } catch(WrongAge e) {
+                System.out.println("Błędny wiek studenta! Musi być z przedziału 1-99.");
             }
         }
     }
@@ -53,14 +56,20 @@ class Main {
         String name = scan.nextLine();
         if(name.contains(" "))
             throw new WrongStudentName();
-
         return name;
     }
 
-    public static void exercise1() throws IOException, WrongStudentName {
-        var name = ReadName();
+    public static int ReadAge() throws WrongAge {
         System.out.println("Podaj wiek: ");
-        var age = scan.nextInt();
+        int age = scan.nextInt();
+        if(age < 1 || age > 99)
+            throw new WrongAge();
+        return age;
+    }
+
+    public static void exercise1() throws IOException, WrongStudentName, WrongAge {
+        var name = ReadName();
+        var age = ReadAge();
         scan.nextLine();
         System.out.println("Podaj datę urodzenia DD-MM-YYYY");
         var date = scan.nextLine();
